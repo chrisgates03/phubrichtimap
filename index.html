@@ -1,16 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Phaeognathus hubrichti - Red Hills Salamander Occurrences</title>
+    <title>Red Hills Salamander Map</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Leaflet CSS and JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <style>
+
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 14px;
+            pointer-events: none;
+            font-family: Arial, sans-serif;
+        }
+        
+        .info-panel h3 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+        
+        .count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff4081;
+            margin: 5px 0;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 10px;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 12px;
+            pointer-events: none;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4081;
+            display: inline-block;
+            margin-right: 8px;
+        }
+    </style>
 </head>
 <body>
     <div id="map"></div>
@@ -18,172 +89,11 @@
         <h3>📍 Phaeognathus hubrichti</h3>
         <div>Red Hills Salamander</div>
         <div class="count" id="pointCount">Loading...</div>
-        <div id="yearRange"></div>
-        <div><small>Endemic to Alabama, USA</small></div>
+        <div id="status"></div>
     </div>
     <div class="legend">
-        <h4>Occurrence Year</h4>
-        <div class="legend-item">
-            <div class="legend-color old"></div>
-            <span>Before 1970</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color medium"></div>
-            <span>1970 - 1999</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color recent"></div>
-            <span>2000 - Present</span>
-        </div>
-        <hr style="margin: 5px 0;">
-        <div class="legend-item">
-            <div class="legend-color all"></div>
-            <span>Unknown year</span>
-        </div>
-    </div>
-    <div class="controls">
-        🔍 <strong>Click on any point for details</strong>
+        <div class="legend-color"></div> Species Occurrence
     </div>
 
-    <script>
-  
-        var map = L.map('map').setView([31.8, -86.8], 8);
-        
-      
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 18
-        }).addTo(map);
-        
-    
-        var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles © Esri'
-        });
-        
-    
-        L.control.scale({ metric: true, imperial: true }).addTo(map);
-        
-      
-        var allMarkers = [];
-        
-
-        function getColorByYear(year) {
-            if (!year || year === '') return '#ff4081';  
-            var y = parseInt(year);
-            if (isNaN(y)) return '#ff4081';
-            if (y < 1970) return '#ff6b6b';  
-            if (y < 2000) return '#ffa94d';  
-            return '#51cf66';                 
-        }
-
-        fetch('phub.csv.csv')  
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.text();
-            })
-            .then(csvText => {
-                Papa.parse(csvText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        var features = [];
-                        var yearCounts = { pre1970: 0, pre2000: 0, post2000: 0, unknown: 0 };
-                        var years = [];
-                        
-                        results.data.forEach(row => {
-                            var lat = parseFloat(row.decimalLatitude);
-                            var lng = parseFloat(row.decimalLongitude);
-                            var year = row.year;
-                            
-                            if (!isNaN(lat) && !isNaN(lng) && lat && lng) {
-                              
-                                if (year && year !== '') {
-                                    years.push(parseInt(year));
-                                    if (year < 1970) yearCounts.pre1970++;
-                                    else if (year < 2000) yearCounts.pre2000++;
-                                    else yearCounts.post2000++;
-                                } else {
-                                    yearCounts.unknown++;
-                                }
-                                
-                                features.push({
-                                    lat: lat,
-                                    lng: lng,
-                                    properties: row
-                                });
-                            }
-                        });
-                        
-                      
-                        document.getElementById('pointCount').innerHTML = features.length;
-                        if (years.length > 0) {
-                            var minYear = Math.min(...years);
-                            var maxYear = Math.max(...years);
-                            document.getElementById('yearRange').innerHTML = 
-                                `📅 ${minYear} - ${maxYear}<br>
-                                 <small>${yearCounts.pre1970} before 1970 | ${yearCounts.pre2000} 1970-1999 | ${yearCounts.post2000} 2000+ | ${yearCounts.unknown} unknown year</small>`;
-                        } else {
-                            document.getElementById('yearRange').innerHTML = '📅 Year data unavailable for some records';
-                        }
-                        
-                        if (features.length === 0) {
-                            document.getElementById('pointCount').innerHTML = '0 - No valid coordinates found!';
-                            return;
-                        }
-                        
-                      
-                        var bounds = [];
-                        
-                        features.forEach(point => {
-                            var props = point.properties;
-                            var year = props.year;
-                            var markerColor = getColorByYear(year);
-                            
-                            // Create popup content with available data
-                            var popupContent = `
-                                <div style="min-width: 200px;">
-                                    <strong> Phaeognathus hubrichti</strong><br>
-                                    <i>Red Hills Salamander</i>
-                                    <hr style="margin: 5px 0;">
-                                    <strong>📍 Location:</strong> ${props.locality || 'Not specified'}<br>
-                                    <strong> State:</strong> ${props.stateProvince || 'Unknown'}<br>
-                                    <strong> Coordinates:</strong> ${point.lat.toFixed(4)}°, ${point.lng.toFixed(4)}°<br>
-                                    <strong> Year:</strong> ${year || 'Unknown'}<br>
-                                    <strong> Institution:</strong> ${props.institutionCode || 'N/A'}<br>
-                                    <strong> Record #:</strong> ${props.catalogNumber || 'N/A'}<br>
-                                    <strong> Recorded by:</strong> ${props.recordedBy || 'Unknown'}<br>
-                                    <strong> Basis:</strong> ${props.basisOfRecord || 'Unknown'}<br>
-                                    <a href="https://www.gbif.org/occurrence/${props.gbifID}" target="_blank" style="color: #ff4081;">🔗 View on GBIF</a>
-                                </div>
-                            `;
-                            
-                            var marker = L.circleMarker([point.lat, point.lng], {
-                                radius: 7,
-                                fillColor: markerColor,
-                                color: '#ffffff',
-                                weight: 1.5,
-                                opacity: 1,
-                                fillOpacity: 0.8
-                            }).bindPopup(popupContent);
-                            
-                            marker.addTo(map);
-                            allMarkers.push(marker);
-                            bounds.push([point.lat, point.lng]);
-                        });
-                        
-                        // Fit map to show all points
-                        if (bounds.length > 0) {
-                            var boundsGroup = L.latLngBounds(bounds);
-                            map.fitBounds(boundsGroup.pad(0.1));
-                        }
-                        
-                        console.log(`Loaded ${features.length} occurrence points`);
-                    }
-                });
-            })
-    
-    </script>
 </body>
 </html>
