@@ -87,7 +87,7 @@
 <body>
     <div id="map"></div>
     <div class="info-panel">
-        <h3>📍 Phaeognathus hubrichti</h3>
+        <h3> Phaeognathus hubrichti</h3>
         <div>Red Hills Salamander</div>
         <div class="count" id="pointCount">Loading...</div>
         <div id="status"></div>
@@ -155,7 +155,7 @@
                             });
                             
                             document.getElementById('pointCount').innerHTML = points.length;
-                            document.getElementById('status').innerHTML = `✅ Loaded ${points.length} occurrence records`;
+                            document.getElementById('status').innerHTML = ` Loaded ${points.length} occurrence records`;
                             
                             if (points.length === 0) {
                                 document.getElementById('status').innerHTML = 'No valid coordinates found in CSV!';
@@ -166,7 +166,7 @@
                             
                             points.forEach(point => {
                                 var popupContent = `
-                                    <strong>🐸 Red Hills Salamander</strong><br>
+                                    <strong> Red Hills Salamander</strong><br>
                                     <strong>Location:</strong> ${point.locality}<br>
                                     <strong>State:</strong> ${point.state}<br>
                                     <strong>Year:</strong> ${point.year}<br>
