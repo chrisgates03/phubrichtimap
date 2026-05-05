@@ -68,12 +68,12 @@
         
 
         function getColorByYear(year) {
-            if (!year || year === '') return '#ff4081';  // Unknown - pink
+            if (!year || year === '') return '#ff4081';  
             var y = parseInt(year);
             if (isNaN(y)) return '#ff4081';
-            if (y < 1970) return '#ff6b6b';   // Old - red
-            if (y < 2000) return '#ffa94d';   // Medium - orange
-            return '#51cf66';                  // Recent - green
+            if (y < 1970) return '#ff6b6b';  
+            if (y < 2000) return '#ffa94d';  
+            return '#51cf66';                 
         }
 
         fetch('phub.csv.csv')  
@@ -98,7 +98,7 @@
                             var year = row.year;
                             
                             if (!isNaN(lat) && !isNaN(lng) && lat && lng) {
-                                // Track years for display
+                              
                                 if (year && year !== '') {
                                     years.push(parseInt(year));
                                     if (year < 1970) yearCounts.pre1970++;
@@ -116,7 +116,7 @@
                             }
                         });
                         
-                        // Update info panel
+                      
                         document.getElementById('pointCount').innerHTML = features.length;
                         if (years.length > 0) {
                             var minYear = Math.min(...years);
@@ -133,7 +133,7 @@
                             return;
                         }
                         
-                        // Add markers to map
+                      
                         var bounds = [];
                         
                         features.forEach(point => {
@@ -144,17 +144,17 @@
                             // Create popup content with available data
                             var popupContent = `
                                 <div style="min-width: 200px;">
-                                    <strong>🐸 Phaeognathus hubrichti</strong><br>
+                                    <strong> Phaeognathus hubrichti</strong><br>
                                     <i>Red Hills Salamander</i>
                                     <hr style="margin: 5px 0;">
                                     <strong>📍 Location:</strong> ${props.locality || 'Not specified'}<br>
-                                    <strong>🗺️ State:</strong> ${props.stateProvince || 'Unknown'}<br>
-                                    <strong>📐 Coordinates:</strong> ${point.lat.toFixed(4)}°, ${point.lng.toFixed(4)}°<br>
-                                    <strong>📅 Year:</strong> ${year || 'Unknown'}<br>
-                                    <strong>🏛️ Institution:</strong> ${props.institutionCode || 'N/A'}<br>
-                                    <strong>📝 Record #:</strong> ${props.catalogNumber || 'N/A'}<br>
-                                    <strong>👤 Recorded by:</strong> ${props.recordedBy || 'Unknown'}<br>
-                                    <strong>📊 Basis:</strong> ${props.basisOfRecord || 'Unknown'}<br>
+                                    <strong> State:</strong> ${props.stateProvince || 'Unknown'}<br>
+                                    <strong> Coordinates:</strong> ${point.lat.toFixed(4)}°, ${point.lng.toFixed(4)}°<br>
+                                    <strong> Year:</strong> ${year || 'Unknown'}<br>
+                                    <strong> Institution:</strong> ${props.institutionCode || 'N/A'}<br>
+                                    <strong> Record #:</strong> ${props.catalogNumber || 'N/A'}<br>
+                                    <strong> Recorded by:</strong> ${props.recordedBy || 'Unknown'}<br>
+                                    <strong> Basis:</strong> ${props.basisOfRecord || 'Unknown'}<br>
                                     <a href="https://www.gbif.org/occurrence/${props.gbifID}" target="_blank" style="color: #ff4081;">🔗 View on GBIF</a>
                                 </div>
                             `;
@@ -183,11 +183,7 @@
                     }
                 });
             })
-            .catch(error => {
-                console.error('Error loading CSV:', error);
-                document.getElementById('pointCount').innerHTML = `❌ Error: ${error.message}`;
-                document.getElementById('pointCount').innerHTML += '<br><small>Make sure the CSV file is in the same folder and you\'re running a web server.</small>';
-            });
+    
     </script>
 </body>
 </html>
