@@ -1,4 +1,4 @@
-
+document.addEventListener('DOMContentLoaded', function() {
         var map = L.map('map').setView([31.8, -86.8], 8);
         
 
@@ -110,3 +110,4 @@
 
         console.log('Map Works! ^_^ Great job');
  
+});
