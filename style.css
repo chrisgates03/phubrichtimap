@@ -76,31 +76,31 @@
        pointer-events: none;
 }
 
-.info-header{
+.info-header {
        background: #ff4081;
        color: white;
        padding: 10px 15px;
        font-weight: bold;
 }
-.info-header-h4{
+.info-header-h4 {
        margin: 0;
        font-size: 16px;
 }
-info-header-img{
+info-header-img {
        width: 100%;
        height: auto;
        margin-bottom: 8px;
 }
-.info-content{
+.info-content {
        padding: 12px 15px;
        font-size: 12px;
        line-height: 1.5;
 }
 
-.info-content p{
+.info-content p {
        margin: 6px 0;
 }
 
-.info-content strong{
+.info-content strong {
        color:#2c3e50;
 }
