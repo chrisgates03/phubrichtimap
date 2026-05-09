@@ -1,5 +1,4 @@
-    <script>
- 
+
         var map = L.map('map').setView([31.8, -86.8], 8);
         
 
@@ -8,14 +7,17 @@
         }).addTo(map);
         
   
-        document.getElementById('status').innerHTML = 'CSV loading';
+        document.getElementById('status').innerHTML = 'Loading CSV file...';
         
       
         var csvFiles = ['phub.csv', 'phub.csv.csv', 'phub csv.csv'];
         var currentTry = 0;
         
         function tryLoadCSV() {
-
+            if (currentTry >= csvFiles.length) {
+                document.getElementById('status').innerHTML = 'Error: CSV file not found. Is file uploaded?.';
+                document.getElementById('pointCount').innerHTML = '0';
+                return;
             }
             
             var filename = csvFiles[currentTry];
@@ -29,7 +31,7 @@
                     return response.text();
                 })
                 .then(csvText => {
-                    document.getElementById('status').innerHTML = 'Parsing CSV data...';
+                    document.getElementById('status').innerHTML = 'Parsing CSV...';
                     
                     Papa.parse(csvText, {
                         header: true,
@@ -55,7 +57,12 @@
                             
                             document.getElementById('pointCount').innerHTML = points.length;
                             document.getElementById('status').innerHTML = ` Loaded ${points.length} occurrence records`;
- 
+                            
+                            if (points.length === 0) {
+                                document.getElementById('status').innerHTML = 'No valid coordinates found';
+                                return;
+                            }
+                            
                             var bounds = [];
                             
                             points.forEach(point => {
@@ -81,7 +88,7 @@
                                 bounds.push([point.lat, point.lng]);
                             });
                             
-                      
+                        
                             if (bounds.length > 0) {
                                 map.fitBounds(bounds);
                             }
@@ -101,5 +108,5 @@
         tryLoadCSV();
         
 
-        console.log('Map works! ^_^');
-
+        console.log('Map Works! ^_^ Great job');
+ 
